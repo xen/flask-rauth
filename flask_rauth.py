@@ -14,7 +14,8 @@ from functools import wraps
 from urlparse import urljoin
 from flask import request, session, redirect, current_app
 from werkzeug import parse_options_header
-from rauth.service import OAuth2Service, OAuth1Service, OflyService, Response, parse_utf8_qsl
+from rauth.service import OAuth2Service, OAuth1Service, OflyService, parse_utf8_qsl
+from requests.sessions import Session
 
 # specified by the OAuth 2.0 spec
 # http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.1.4
@@ -101,7 +102,7 @@ class RauthException(RuntimeError):
     def __unicode__(self):
         return self.message
 
-class RauthResponse(Response):
+class RauthResponse(Session):
     '''
     This class inherits :class:`rauth.service.Response`.
 
@@ -264,7 +265,7 @@ class RauthOAuth2(OAuth2Service, RauthServiceMixin):
     '''
     def __init__(self, app=None, base_url=None, consumer_key=None, consumer_secret=None, **kwargs):
         RauthServiceMixin.__init__(self, app=app, base_url=base_url)
-        OAuth2Service.__init__(self, consumer_key=consumer_key, consumer_secret=consumer_secret, **kwargs)
+        OAuth2Service.__init__(self, client_id=consumer_key, client_secret=consumer_secret, **kwargs)
 
     def authorize(self, callback, **authorize_params):
         '''
